@@ -1,6 +1,7 @@
 from machine import Pin
 from time import sleep, sleep_ms, sleep_us, ticks_ms
 
+
 ##############################
 HEX_FILE = "main.hex"       # name of hex file in filesystem
 CODE_START_ADDR = 0         # code region goes from 0x000 to 0x7ff

@@ -1,29 +1,18 @@
-from machine import Pin, PWM, ADC
+from machine import Pin
 from time import sleep, sleep_ms, sleep_us, ticks_ms
 
 
 ##############################
-HEX_FILE = "test.hex"       # name of hex file in filesystem
+HEX_FILE = "main.hex"       # name of hex file in filesystem
 CODE_START_ADDR = 0         # code region goes from 0x000 to 0x7ff
 CODE_END_ADDR = 0x7ff       # code region goes from 0x000 to 0x7ff
 CONFIG_START_ADDR = 0x2000  # config region goes from 0x2000 to 0x2007
 CONFIG_END_ADDR = 0x2007    # config region goes from 0x2000 to 0x2007
 DEVID_PIC16F72 = 5          # device ID for PIC16F72
 
-PWM_PIN = 22                # PWM for boost converter for VPP
-FB_PIN = 28                 # Feedback for boost output voltage
 PGD_PIN = 10                # Programming pin: PGD
 PGC_PIN = 11                # Programming pin: PGC
 VPP_PIN = 12                # Programming pin enable: VPP
-
-PWM_FREQ = 50000            # Boost converter frequency
-INITIAL_DUTY = int(0.5 * 65536)
-DUTY_STEP = 50
-LOOP_TIME_MS = 10           # Boost regulation loop interval
-BOOST_TARGET_V = 13.2       # VPP target voltage
-DUTY_MAX = int(0.65 * 65536) # Duty cycle bound
-DUTY_MIN = int(0.25 * 65536) # Duty cycle bound
-ADC_SF = 12.94/1.414         # Voltage divider
 
 # ICSP commands:
 # http://ww1.microchip.com/downloads/en/devicedoc/39588a.pdf
@@ -128,42 +117,6 @@ def read_data():
     PGD.init(PGD.OUT)
     return x >> 1
 ##############################
-# Run boost converter to get VPP voltage:
-def boostVPP(pwm_dout, vboost_ch, timeout_ms):
-    adc_vout = ADC(vboost_ch)
-    pwm_dout.freq(PWM_FREQ)
-    duty16 = INITIAL_DUTY
-    pwm_dout.duty_u16(duty16)
-    
-    boost_volts = 0
-    t0 = ticks_ms()
-    while ticks_ms() - t0 < timeout_ms:
-        adc_reading = 0
-        N = 32
-        for _ in range(N):
-            adc_reading += (adc_vout.read_u16() >> 8)
-        adc_reading /= N
-
-        # averaged now
-        adc_volts = adc_reading * 3.3 / 256.0
-        boost_volts = adc_volts * ADC_SF
-        
-        if abs(boost_volts - BOOST_TARGET_V) < 0.02:
-            break
-        if boost_volts < BOOST_TARGET_V:
-            duty16 += DUTY_STEP
-            if duty16 > DUTY_MAX:
-                duty16 = DUTY_MAX
-        else:
-            duty16 -= DUTY_STEP
-            if duty16 < DUTY_MIN:
-                duty16 = DUTY_MIN
-        
-        pwm22.duty_u16(duty16)
-        sleep_ms(LOOP_TIME_MS)
-    return boost_volts
-
-
 def find_target():
     # Try to read the device ID:
     enter_prog()
@@ -307,15 +260,6 @@ PGC.value(0)
 VPP.value(0)
 print(f"Hex file to flash: {HEX_FILE}")
 
-print(f"[1] Starting VPP regulation... ", end='')
-t0 = ticks_ms()
-pwm22 = PWM(Pin(PWM_PIN))
-vboost_ch = Pin(FB_PIN, mode=Pin.IN)
-boost_v = boostVPP(pwm22, vboost_ch, 5000)
-t1 = (ticks_ms() - t0)/1000
-print(f"converged to {boost_v:.2f}V in {t1:.2f}s")
-# Once regulation is achieved, hold duty cycle and continue
-
 print(f"[2] Trying to find PIC16F72... ", end='')
 found = False
 devid, devrev = find_target()
@@ -355,12 +299,9 @@ if found:
         status = "completed" if p else "failed"
         print(f"{status} in {tprog:.2f} seconds")
 
-pwm22.duty_u16(0)
-pwm22.deinit()
 VPP.value(0)
 PGD.value(0)
 PGC.value(0)
 
+# Step 4:
 print(f"Done")
-
-

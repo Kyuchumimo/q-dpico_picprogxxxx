@@ -2,7 +2,7 @@ from machine import Pin
 from time import sleep, sleep_ms, sleep_us, ticks_ms
 
 ##############################
-HEX_FILE = "/P6/main.hex"       # name of hex file in filesystem
+HEX_FILE = "main.hex"       # name of hex file in filesystem
 CODE_START_ADDR = 0         # code region goes from 0x000 to 0x3ff
 CODE_END_ADDR = 0x3ff       # code region goes from 0x000 to 0x3ff
 CONFIG_START_ADDR = 0x2000  # config region goes from 0x2000 to 0x2007

@@ -11,3 +11,5 @@ To load the .hex code to the PIC microcontroller, you first need to verify that 
 It is recommended to use NotePad++ for this task.
 
 ![schematic](https://github.com/Kyuchumimo/q-dpico_picprogxxxx/blob/main/schematic.png)
+
+![q-dpico_picprogxxxx](https://github.com/Kyuchumimo/q-dpico_picprogxxxx/assets/74131798/ff9cb71f-5634-42c1-88e2-7aae74238f0d)

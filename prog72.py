@@ -267,7 +267,7 @@ if devid == DEVID_PIC16F72:
     print(f"found, rev {devrev}")
     found = True
 else:
-    print(f"not found: id = 0x{id :04x}")
+    print(f"not found: id = 0x{devid:04x}")
 
 start_code = ':'
 allowed_data_types = [0, 1]  # data, EOF

@@ -21,8 +21,8 @@ CMD_LOAD_DATA = 2
 CMD_READ_DATA = 4
 CMD_INC_ADDR = 6
 CMD_BEGIN_PROG = 8
-CMD_BULK_ERASE_1 = 1
-CMD_BULK_ERASE_2 = 7
+CMD_BULK_ERASE = 9
+CMD_END_PROG = 14
 ##############################
 
 PGD = Pin(PGD_PIN, Pin.OUT)
@@ -140,12 +140,9 @@ def bulk_erase():
     enter_prog()  # Reset PC
     command(CMD_LOAD_DATA)
     write_data(0x3fff)
-    command(CMD_BULK_ERASE_1)
-    command(CMD_BULK_ERASE_2)
+    command(CMD_BULK_ERASE)
     command(CMD_BEGIN_PROG)
-    sleep_ms(8)
-    command(CMD_BULK_ERASE_1)
-    command(CMD_BULK_ERASE_2)
+    sleep_ms(10)
 
 def blank_check():
     enter_prog()  # Reset PC

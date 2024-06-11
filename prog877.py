@@ -21,6 +21,7 @@ CMD_LOAD_DATA = 2
 CMD_READ_DATA = 4
 CMD_INC_ADDR = 6
 CMD_BEGIN_PROG = 8
+CMD_BEGIN_PROG_ONLY = 24
 CMD_BULK_ERASE = 9
 CMD_END_PROG = 14
 ##############################
@@ -208,7 +209,7 @@ def program():
                     # Program one word:
                     command(CMD_LOAD_DATA)
                     write_data(data_16)
-                    command(CMD_BEGIN_PROG)
+                    command(CMD_BEGIN_PROG_ONLY)
                     sleep_ms(2)
                     command(CMD_INC_ADDR)
                     current_word_addr += 1
@@ -234,7 +235,7 @@ def program():
                     # Program one word:
                     command(CMD_LOAD_DATA)
                     write_data(data_16)
-                    command(CMD_BEGIN_PROG)
+                    command(CMD_BEGIN_PROG_ONLY)
                     sleep_ms(2)
                     command(CMD_INC_ADDR)
                     current_config_addr += 1
